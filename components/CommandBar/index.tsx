@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Command } from 'cmdk';
 import { useAppStore, SearchScope, OpenMode, SearchEnginePref, ThemePref } from '../../store/useAppStore';
 import { useBrowserSearch, SearchResult } from './hooks/useBrowserSearch';
+import { NavigationControls } from './NavigationControls';
 
 export const CommandBar = () => {
   const { 
@@ -13,6 +14,8 @@ export const CommandBar = () => {
     searchEngine, setSearchEngine 
   } = useAppStore();
   
+  const [iframeBgColor, setIframeBgColor] = useState<string | null>(null);
+
   const { results, isLoading } = useBrowserSearch(activeScope, searchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,6 +25,16 @@ export const CommandBar = () => {
     window.addEventListener('click', handleGlobalClick);
     return () => window.removeEventListener('click', handleGlobalClick);
   }, [activeScope]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'KEBO_IFRAME_BG_COLOR' && event.data.color) {
+        setIframeBgColor(event.data.color);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   const getUrl = (query: string) => {
     if (query.startsWith('http://') || query.startsWith('https://')) return query;
@@ -138,6 +151,7 @@ export const CommandBar = () => {
         label="Global Command Menu"
       >
         <div className="flex items-center p-3 border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md transition-all">
+          <NavigationControls />
           {activeScope !== 'none' && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 mr-2 bg-blue-100 border border-blue-200 dark:bg-blue-500/20 dark:border-blue-500/30 rounded-lg text-blue-700 dark:text-blue-400 text-sm font-medium">
               <span>{availableScopes.find(s => s.id === activeScope)?.label || activeScope}</span>
@@ -169,9 +183,12 @@ export const CommandBar = () => {
         <div className="flex-1 overflow-hidden relative flex flex-col">
           
           {splitUrl && activeScope === 'none' && !searchQuery.startsWith('/') && (
-            <div className="absolute inset-0 flex flex-col z-10 bg-white">
+            <div 
+              className={`absolute inset-0 flex flex-col z-10 ${iframeBgColor ? '' : 'bg-white dark:bg-neutral-950'}`}
+              style={iframeBgColor ? { backgroundColor: iframeBgColor } : undefined}
+            >
               <div className="absolute top-0 w-full h-1 bg-blue-500/20 animate-pulse"></div>
-              <iframe src={splitUrl} className="w-full h-full border-none" title="Split View" />
+              <iframe name="kebo-split-view" src={splitUrl} className="w-full h-full border-none" title="Split View" />
             </div>
           )}
 
