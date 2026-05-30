@@ -45,4 +45,15 @@ export default defineBackground(() => {
       }
     }
   });
+  // Listen for generic messages
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'OPEN_SIDEBAR' && message.url) {
+      chrome.storage.local.set({ sidebarUrl: message.url }, () => {
+        if (sender.tab?.windowId) {
+          chrome.sidePanel.open({ windowId: sender.tab.windowId });
+        }
+      });
+    }
+  });
+
 });

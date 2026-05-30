@@ -54,7 +54,7 @@ function OverlayApp() {
             handleClose();
           }
         }}
-        onKeyDownCapture={(e) => {
+        onKeyDown={(e) => {
           // Prevent the underlying webpage from intercepting Kebo's keyboard shortcuts
           e.stopPropagation();
         }}
@@ -84,7 +84,6 @@ export default defineContentScript({
     const ui = await createShadowRootUi(ctx, {
       name: 'kebo-overlay-shadow-root',
       position: 'inline', // We manually position the host
-      zIndex: 2147483647,
       onMount: (container: HTMLElement) => {
         // Force the shadow host to have maximum z-index and not block clicks when closed
         const host = container.getRootNode();
