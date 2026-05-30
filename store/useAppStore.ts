@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export type OpenMode = 'current' | 'split' | 'new' | 'group';
 export type SearchScope = 'none' | 'tabs' | 'bookmarks' | 'history' | 'closed' | 'web' | 'settings';
 export type ThemePref = 'system' | 'light' | 'dark';
-export type SearchEnginePref = 'brave' | 'google' | 'duckduckgo' | 'bing';
+export type SearchEnginePref = 'brave' | 'duckduckgo' | 'startpage' | 'qwant' | 'ecosia';
 
 interface AppState {
   searchQuery: string;

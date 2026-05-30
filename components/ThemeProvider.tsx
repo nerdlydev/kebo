@@ -4,22 +4,22 @@ import { useAppStore } from '../store/useAppStore';
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { theme } = useAppStore();
 
+  const [isDark, setIsDark] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      return theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    return false;
+  });
+
   useEffect(() => {
-    const root = document.documentElement;
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
     const applyTheme = () => {
-      const isDark = theme === 'dark' || (theme === 'system' && mediaQuery.matches);
-      if (isDark) {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
+      setIsDark(theme === 'dark' || (theme === 'system' && mediaQuery.matches));
     };
 
     applyTheme();
 
-    // Listen for system theme changes if set to system
     const listener = () => {
       if (useAppStore.getState().theme === 'system') {
         applyTheme();
@@ -30,5 +30,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => mediaQuery.removeEventListener('change', listener);
   }, [theme]);
 
-  return <>{children}</>;
+  return (
+    <div className={`kebo-theme-root h-full w-full ${isDark ? 'dark' : ''}`}>
+      {children}
+    </div>
+  );
 };
