@@ -26,7 +26,7 @@ function SidePanelApp() {
 
   return (
     <ThemeProvider>
-      <div className="h-screen w-full bg-white dark:bg-neutral-950 flex flex-col">
+      <div className="h-screen w-full bg-white dark:bg-neutral-950 flex flex-col kebo-base">
         {url ? (
           <iframe 
             src={url} 

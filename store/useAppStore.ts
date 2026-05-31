@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 
 export type OpenMode = 'current' | 'split' | 'new' | 'group';
 export type SearchScope = 'none' | 'tabs' | 'bookmarks' | 'history' | 'closed' | 'web' | 'settings';
@@ -20,6 +20,19 @@ interface AppState {
   searchEngine: SearchEnginePref;
   setSearchEngine: (engine: SearchEnginePref) => void;
 }
+
+const chromeStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    const result = await chrome.storage.local.get(name);
+    return (result[name] as string) || null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await chrome.storage.local.set({ [name]: value });
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await chrome.storage.local.remove(name);
+  },
+};
 
 export const useAppStore = create<AppState>()(
   persist(
@@ -46,6 +59,7 @@ export const useAppStore = create<AppState>()(
         theme: state.theme,
         searchEngine: state.searchEngine
       }),
+      storage: createJSONStorage(() => chromeStorage),
     }
   )
 );

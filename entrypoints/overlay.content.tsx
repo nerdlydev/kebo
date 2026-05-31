@@ -47,7 +47,7 @@ function OverlayApp() {
   return (
     <ThemeProvider>
       <div 
-        className={`fixed inset-0 z-[2147483647] pointer-events-auto bg-black/40 backdrop-blur-sm flex items-start justify-center pt-[15vh] px-4 ${isClosing ? 'animate-out fade-out duration-150 ease-in' : 'animate-in fade-in duration-150 ease-out'}`}
+        className={`fixed inset-0 z-[2147483647] pointer-events-auto bg-black/40 backdrop-blur-sm flex items-start justify-center pt-[15vh] px-4 kebo-base ${isClosing ? 'animate-out fade-out duration-150 ease-in' : 'animate-in fade-in duration-150 ease-out'}`}
         onClick={(e) => {
           // If they click the backdrop, close the overlay
           if (e.target === e.currentTarget) {

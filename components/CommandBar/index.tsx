@@ -172,11 +172,11 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                 setSearchQuery('');
                 inputRef.current?.focus();
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 mr-1 shrink-0 bg-blue-100 border border-blue-200 dark:bg-blue-500/20 dark:border-blue-500/30 rounded-lg text-blue-700 dark:text-blue-400 text-sm font-medium cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-500/30 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1 mr-2 shrink-0 bg-slate-100/80 dark:bg-neutral-800/80 border border-slate-200/60 dark:border-white/10 rounded-full text-slate-600 dark:text-neutral-300 text-[13px] font-normal cursor-pointer hover:bg-slate-200 dark:hover:bg-neutral-700 transition-all"
               title="Click to clear"
             >
               <span>{availableScopes.find(s => s.id === activeScope)?.label || activeScope}</span>
-              <svg className="w-3.5 h-3.5 ml-0.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+              <svg className="w-3.5 h-3.5 ml-0.5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </div>
           )}
 
@@ -196,7 +196,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
               setSearchQuery(val);
             }}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent text-slate-900 dark:text-white text-xl outline-none placeholder:text-slate-400/80 dark:placeholder:text-neutral-500/80 flex-1" 
+            className="w-full bg-transparent text-slate-900 dark:text-white text-xl font-normal outline-none placeholder:text-slate-400/60 dark:placeholder:text-neutral-500/60 flex-1" 
             placeholder={activeScope === 'none' ? "Type a URL, search, or type / for commands..." : `Search ${activeScope}...`}
           />
         </div>
@@ -219,7 +219,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                 
                 {/* Left Column: Behavior & Appearance */}
                 <div className="flex flex-col gap-3">
-                  <Command.Group heading="Open Behavior" className="bg-slate-100/50 dark:bg-neutral-900/30 rounded-[24px] p-2 border border-slate-200 dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-500">
+                  <Command.Group heading="Open Behavior" className="bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-2 border border-transparent dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
                     {modes.map(mode => (
                       <Command.Item
                         key={mode.id}
@@ -229,15 +229,15 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                           setOpenMode(mode.id);
                           if (mode.id !== 'split') setSplitUrl(null);
                         }}
-                        className={`flex items-center gap-3 px-4 py-3 mb-1 last:mb-0 rounded-full cursor-pointer text-sm transition-colors ${openMode === mode.id ? 'bg-white dark:bg-white/10 shadow-sm text-blue-700 dark:text-blue-400 font-medium border border-slate-200 dark:border-white/10' : 'text-slate-700 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'} aria-selected:ring-2 aria-selected:ring-blue-500/50`}
+                        className={`flex items-center gap-3 px-4 py-3 mb-1 last:mb-0 rounded-full cursor-pointer text-[13px] transition-colors ${openMode === mode.id ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white font-normal' : 'text-slate-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/10`}
                       >
                         <div className="flex-1">{mode.label}</div>
-                        {openMode === mode.id && <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>}
+                        {openMode === mode.id && <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>}
                       </Command.Item>
                     ))}
                   </Command.Group>
 
-                  <Command.Group heading="Appearance" className="bg-slate-100/50 dark:bg-neutral-900/30 rounded-[24px] p-2 border border-slate-200 dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-500">
+                  <Command.Group heading="Appearance" className="bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-2 border border-transparent dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
                     <div className="grid grid-cols-3 gap-2">
                       {[
                         { id: 'system', label: 'System', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
@@ -249,10 +249,10 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                           data-kebo-item="true"
                           value={`appearance theme ${t.label}`}
                           onSelect={() => setTheme(t.id as ThemePref)}
-                          className={`flex flex-col items-center justify-center gap-2 p-3 rounded-2xl cursor-pointer transition-colors border ${theme === t.id ? 'bg-white dark:bg-white/10 shadow-sm border-slate-200 dark:border-white/10 text-blue-700 dark:text-blue-400' : 'border-transparent text-slate-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:ring-2 aria-selected:ring-blue-500/50`}
+                          className={`flex flex-col items-center justify-center gap-2 p-3 rounded-2xl cursor-pointer transition-colors ${theme === t.id ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white font-normal' : 'text-slate-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/10`}
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={t.icon} /></svg>
-                          <span className="text-[10px] font-medium">{t.label}</span>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={t.icon} /></svg>
+                          <span className="text-[10px] font-normal">{t.label}</span>
                         </Command.Item>
                       ))}
                     </div>
@@ -261,7 +261,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
 
                 {/* Right Column: Search Engine & Shortcuts */}
                 <div className="flex flex-col gap-3">
-                  <Command.Group heading="Search Engine" className="bg-slate-100/50 dark:bg-neutral-900/30 rounded-[24px] p-2 border border-slate-200 dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-500">
+                  <Command.Group heading="Search Engine" className="bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-2 border border-transparent dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
                     {[
                       { id: 'brave', label: 'Brave Search' },
                       { id: 'duckduckgo', label: 'DuckDuckGo' },
@@ -274,27 +274,27 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                         data-kebo-item="true"
                         value={`search engine ${engine.label}`}
                         onSelect={() => setSearchEngine(engine.id as SearchEnginePref)}
-                        className={`flex items-center gap-3 px-4 py-2.5 mb-1 last:mb-0 rounded-full cursor-pointer text-sm transition-colors ${searchEngine === engine.id ? 'bg-white dark:bg-white/10 shadow-sm text-blue-700 dark:text-blue-400 font-medium border border-slate-200 dark:border-white/10' : 'text-slate-700 dark:text-neutral-300 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent'} aria-selected:ring-2 aria-selected:ring-blue-500/50`}
+                        className={`flex items-center gap-3 px-4 py-2.5 mb-1 last:mb-0 rounded-full cursor-pointer text-[13px] transition-colors ${searchEngine === engine.id ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white font-normal' : 'text-slate-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/10`}
                       >
                         <div className="flex-1">{engine.label}</div>
-                        {searchEngine === engine.id && <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>}
+                        {searchEngine === engine.id && <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>}
                       </Command.Item>
                     ))}
                   </Command.Group>
 
-                  <div className="flex-1 bg-slate-100/50 dark:bg-neutral-900/30 rounded-[24px] p-4 border border-slate-200 dark:border-white/5 flex flex-col">
-                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-neutral-500 mb-3">Shortcuts</h3>
+                  <div className="flex-1 bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-4 border border-transparent dark:border-white/5 flex flex-col">
+                    <h3 className="text-[10px] font-normal uppercase tracking-wider text-slate-400 mb-3">Shortcuts</h3>
                     <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center bg-white dark:bg-white/5 px-3 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-white/5">
-                        <span className="text-[11px] font-medium text-slate-600 dark:text-neutral-300">Open Kebo</span>
-                        <kbd className="text-[10px] text-slate-500 dark:text-neutral-400 font-mono">⌘⇧K</kbd>
+                      <div className="flex justify-between items-center px-3 py-2">
+                        <span className="text-[12px] font-normal text-slate-600 dark:text-neutral-400">Open Kebo</span>
+                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-500 font-mono tracking-widest">⌘⇧K</kbd>
                       </div>
-                      <div className="flex justify-between items-center bg-white dark:bg-white/5 px-3 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-white/5">
-                        <span className="text-[11px] font-medium text-slate-600 dark:text-neutral-300">Search Tabs</span>
-                        <kbd className="text-[10px] text-slate-500 dark:text-neutral-400 font-mono">⌘⇧T</kbd>
+                      <div className="flex justify-between items-center px-3 py-2">
+                        <span className="text-[12px] font-normal text-slate-600 dark:text-neutral-400">Search Tabs</span>
+                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-500 font-mono tracking-widest">⌘⇧T</kbd>
                       </div>
                       <div className="mt-auto pt-2 text-center">
-                        <a href="chrome://extensions/shortcuts" target="_blank" className="text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:underline">Edit in Chrome &rarr;</a>
+                        <a href="chrome://extensions/shortcuts" target="_blank" className="text-[10px] font-normal text-slate-400 hover:text-slate-600 dark:hover:text-neutral-300 transition-colors">Edit in Chrome &rarr;</a>
                       </div>
                     </div>
                   </div>
@@ -304,7 +304,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
             )}
 
             {isSelectingScope && (
-              <Command.Group heading="Commands" className="text-xs font-medium text-slate-500 dark:text-neutral-500 px-2 py-2 [&_[cmdk-group-items]]:mt-2">
+              <Command.Group heading="Commands" className="text-xs font-normal text-slate-400 dark:text-neutral-500 px-2 py-2 [&_[cmdk-group-items]]:mt-2 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-1">
                 {availableScopes
                   .filter(s => s.prefix.includes(searchQuery.toLowerCase()))
                   .map((scope) => (
@@ -316,16 +316,16 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                       setActiveScope(scope.id);
                       setSearchQuery('');
                     }}
-                    className="flex items-center gap-3 px-3 py-3 rounded-full cursor-pointer text-sm text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-white/10 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:text-slate-900 dark:aria-selected:text-white transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-[13px] text-slate-600 dark:text-neutral-400 border border-slate-200/40 dark:border-white/5 hover:bg-slate-100/50 dark:hover:bg-white/5 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:border-slate-300/80 dark:aria-selected:border-white/10 aria-selected:shadow-sm aria-selected:text-slate-900 dark:aria-selected:text-white transition-all"
                   >
                     <svg className="w-4 h-4 text-slate-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={scope.icon} />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={scope.icon} />
                     </svg>
                     <div className="flex flex-col">
-                      <span className="font-medium">{scope.label}</span>
-                      <span className="text-xs text-slate-400 dark:text-neutral-500">Search through your {scope.label.toLowerCase()}</span>
+                      <span className="font-normal text-slate-800 dark:text-neutral-200">{scope.label}</span>
+                      <span className="text-[11px] text-slate-400 dark:text-neutral-500 font-normal">Search through your {scope.label.toLowerCase()}</span>
                     </div>
-                    <span className="ml-auto text-xs bg-slate-200 dark:bg-neutral-800 px-2 py-1 rounded text-slate-500 dark:text-neutral-400 font-mono">
+                    <span className="ml-auto text-[10px] font-medium tracking-wider uppercase bg-slate-200 dark:bg-neutral-800 border border-slate-300 dark:border-white/10 px-2 py-0.5 rounded-full text-slate-500 dark:text-neutral-400 font-mono">
                       {scope.prefix}
                     </span>
                   </Command.Item>
@@ -347,23 +347,23 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
             )}
 
             {!isSelectingScope && activeScope !== 'none' && activeScope !== 'settings' && results.length > 0 && (
-              <Command.Group className="[&_[cmdk-group-items]]:mt-1">
+              <Command.Group className="[&_[cmdk-group-items]]:mt-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-1 px-2 pb-2">
                 {results.map((item) => (
                   <Command.Item
                     key={item.id}
                     data-kebo-item="true"
                     value={item.id}
                     onSelect={() => handleResultSelect(item)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-full cursor-pointer text-sm text-slate-700 dark:text-neutral-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 aria-selected:bg-blue-50 dark:aria-selected:bg-blue-500/20 aria-selected:text-blue-700 dark:aria-selected:text-blue-100 transition-colors border border-transparent aria-selected:border-blue-200 dark:aria-selected:border-blue-500/30 group"
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer text-[13px] text-slate-600 dark:text-neutral-400 border border-slate-200/40 dark:border-white/5 hover:bg-slate-100/50 dark:hover:bg-white/5 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:border-slate-300/80 dark:aria-selected:border-white/10 aria-selected:shadow-sm aria-selected:text-slate-900 dark:aria-selected:text-white transition-all group"
                   >
-                    {item.type === 'tab' && <span className="text-xs px-1.5 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded">TAB</span>}
-                    {item.type === 'bookmark' && <span className="text-xs px-1.5 py-0.5 bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded">BM</span>}
-                    {item.type === 'history' && <span className="text-xs px-1.5 py-0.5 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded">HIST</span>}
-                    {item.type === 'closed' && <span className="text-xs px-1.5 py-0.5 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded">CLSD</span>}
+                    {item.type === 'tab' && <span className="text-[9px] font-normal tracking-wider uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-neutral-500 rounded-md font-mono">TAB</span>}
+                    {item.type === 'bookmark' && <span className="text-[9px] font-normal tracking-wider uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-neutral-500 rounded-md font-mono">BM</span>}
+                    {item.type === 'history' && <span className="text-[9px] font-normal tracking-wider uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-neutral-500 rounded-md font-mono">HIST</span>}
+                    {item.type === 'closed' && <span className="text-[9px] font-normal tracking-wider uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-neutral-500 rounded-md font-mono">CLSD</span>}
                     
                     <div className="flex flex-col overflow-hidden">
-                      <span className="font-medium truncate">{item.title}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-neutral-500 truncate group-aria-selected:text-blue-600/70 dark:group-aria-selected:text-blue-300/70">{item.url}</span>
+                      <span className="font-normal text-slate-800 dark:text-neutral-200 truncate">{item.title}</span>
+                      <span className="text-[11px] text-slate-400 dark:text-neutral-500 font-normal truncate group-aria-selected:text-slate-500 dark:group-aria-selected:text-neutral-400">{item.url}</span>
                     </div>
                   </Command.Item>
                 ))}
