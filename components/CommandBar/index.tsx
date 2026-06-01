@@ -135,11 +135,11 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
     }
   };
 
-  const modes: { id: OpenMode; label: string }[] = [
-    { id: 'current', label: 'Current Tab' },
-    { id: 'new', label: 'New Tab' },
-    { id: 'group', label: 'Tab Group' },
-    { id: 'split', label: 'Split Mode' }
+  const modes: { id: OpenMode; label: string; icon: string }[] = [
+    { id: 'current', label: 'Current Tab', icon: 'M4 5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5z' },
+    { id: 'new', label: 'New Tab', icon: 'M12 4v16m8-8H4' },
+    { id: 'group', label: 'Tab Group', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+    { id: 'split', label: 'Split Mode', icon: 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h2m10-14h-2a2 2 0 00-2 2v10a2 2 0 002 2h2' }
   ];
 
   const availableScopes: { id: SearchScope; label: string; prefix: string; icon: string }[] = [
@@ -213,88 +213,97 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
           
           <Command.List className="flex-1 overflow-y-auto p-2 scrollbar-hide">
             
-            {/* Settings View (Bento Box) */}
+            {/* Settings View (Sliding Segments) */}
             {activeScope === 'settings' && (
-              <div className="grid grid-cols-2 gap-3 p-2 animate-in fade-in zoom-in-[0.98] duration-200">
+              <div className="flex flex-col gap-6 p-4 animate-in fade-in zoom-in-[0.98] duration-200">
                 
-                {/* Left Column: Behavior & Appearance */}
-                <div className="flex flex-col gap-3">
-                  <Command.Group heading="Open Behavior" className="bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-2 border border-transparent dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
-                    {modes.map(mode => (
-                      <Command.Item
-                        key={mode.id}
-                        data-kebo-item="true"
-                        value={`open mode ${mode.label}`}
-                        onSelect={() => {
-                          setOpenMode(mode.id);
-                          if (mode.id !== 'split') setSplitUrl(null);
-                        }}
-                        className={`flex items-center gap-3 px-4 py-3 mb-1 last:mb-0 rounded-full cursor-pointer text-[13px] transition-colors ${openMode === mode.id ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white font-normal' : 'text-slate-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/10`}
-                      >
-                        <div className="flex-1">{mode.label}</div>
-                        {openMode === mode.id && <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>}
-                      </Command.Item>
-                    ))}
-                  </Command.Group>
-
-                  <Command.Group heading="Appearance" className="bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-2 border border-transparent dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'system', label: 'System', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-                        { id: 'light', label: 'Light', icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
-                        { id: 'dark', label: 'Dark', icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' }
-                      ].map(t => (
+                {/* Row 1: Behavior */}
+                <Command.Group heading="Open Behavior" className="[&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
+                  <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-white/10">
+                    <div className="relative flex gap-2">
+                      <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - ${(modes.length - 1) * 8}px) / ${modes.length})`, transform: `translateX(calc(${modes.findIndex(m => m.id === openMode) * 100}% + ${modes.findIndex(m => m.id === openMode) * 8}px))` }} />
+                      {modes.map(mode => (
                         <Command.Item
-                          key={t.id}
+                          key={mode.id}
                           data-kebo-item="true"
-                          value={`appearance theme ${t.label}`}
-                          onSelect={() => setTheme(t.id as ThemePref)}
-                          className={`flex flex-col items-center justify-center gap-2 p-3 rounded-2xl cursor-pointer transition-colors ${theme === t.id ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white font-normal' : 'text-slate-500 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/10`}
+                          value={`open mode ${mode.label}`}
+                          onSelect={() => {
+                            setOpenMode(mode.id);
+                            if (mode.id !== 'split') setSplitUrl(null);
+                          }}
+                          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${openMode === mode.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={t.icon} /></svg>
-                          <span className="text-[10px] font-normal">{t.label}</span>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={mode.icon} /></svg>
+                          {mode.label}
                         </Command.Item>
                       ))}
                     </div>
-                  </Command.Group>
-                </div>
+                  </div>
+                </Command.Group>
 
-                {/* Right Column: Search Engine & Shortcuts */}
-                <div className="flex flex-col gap-3">
-                  <Command.Group heading="Search Engine" className="bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-2 border border-transparent dark:border-white/5 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
-                    {[
-                      { id: 'brave', label: 'Brave Search' },
-                      { id: 'duckduckgo', label: 'DuckDuckGo' },
-                      { id: 'startpage', label: 'Startpage' },
-                      { id: 'qwant', label: 'Qwant' },
-                      { id: 'ecosia', label: 'Ecosia' }
-                    ].map(engine => (
-                      <Command.Item
-                        key={engine.id}
-                        data-kebo-item="true"
-                        value={`search engine ${engine.label}`}
-                        onSelect={() => setSearchEngine(engine.id as SearchEnginePref)}
-                        className={`flex items-center gap-3 px-4 py-2.5 mb-1 last:mb-0 rounded-full cursor-pointer text-[13px] transition-colors ${searchEngine === engine.id ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white font-normal' : 'text-slate-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5'} aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/10`}
-                      >
-                        <div className="flex-1">{engine.label}</div>
-                        {searchEngine === engine.id && <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>}
-                      </Command.Item>
-                    ))}
+                {/* Row 2: Search Engine */}
+                <Command.Group heading="Search Engine" className="[&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
+                  <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-white/10">
+                    <div className="relative flex gap-2">
+                      <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - 32px) / 5)`, transform: `translateX(calc(${['brave', 'duckduckgo', 'startpage', 'qwant', 'ecosia'].indexOf(searchEngine) * 100}% + ${['brave', 'duckduckgo', 'startpage', 'qwant', 'ecosia'].indexOf(searchEngine) * 8}px))` }} />
+                      {[
+                        { id: 'brave', label: 'Brave', domain: 'search.brave.com' },
+                        { id: 'duckduckgo', label: 'DuckDuckGo', domain: 'duckduckgo.com' },
+                        { id: 'startpage', label: 'Startpage', domain: 'startpage.com' },
+                        { id: 'qwant', label: 'Qwant', domain: 'qwant.com' },
+                        { id: 'ecosia', label: 'Ecosia', domain: 'ecosia.org' }
+                      ].map(engine => (
+                        <Command.Item
+                          key={engine.id}
+                          data-kebo-item="true"
+                          value={`search engine ${engine.label}`}
+                          onSelect={() => setSearchEngine(engine.id as SearchEnginePref)}
+                          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${searchEngine === engine.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
+                        >
+                          <img src={`https://www.google.com/s2/favicons?sz=64&domain=${engine.domain}`} alt={engine.label} className="w-4 h-4 rounded-sm opacity-80 dark:opacity-90" />
+                          {engine.label}
+                        </Command.Item>
+                      ))}
+                    </div>
+                  </div>
+                </Command.Group>
+
+                {/* Row 3: Appearance & Shortcuts */}
+                <div className="grid grid-cols-2 gap-6 items-stretch pb-2">
+                  <Command.Group heading="Appearance" className="flex flex-col [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400 [&_[cmdk-group-items]]:flex-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col">
+                    <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-2 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 flex flex-col justify-center">
+                      <div className="relative flex gap-1 flex-1 items-stretch">
+                        <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - 8px) / 3)`, transform: `translateX(calc(${['system', 'light', 'dark'].indexOf(theme) * 100}% + ${['system', 'light', 'dark'].indexOf(theme) * 4}px))` }} />
+                        {[
+                          { id: 'system', label: 'System', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+                          { id: 'light', label: 'Light', icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
+                          { id: 'dark', label: 'Dark', icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' }
+                        ].map(t => (
+                          <Command.Item
+                            key={t.id}
+                            data-kebo-item="true"
+                            value={`appearance theme ${t.label}`}
+                            onSelect={() => setTheme(t.id as ThemePref)}
+                            title={t.label}
+                            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 h-full text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${theme === t.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={t.icon} /></svg>
+                          </Command.Item>
+                        ))}
+                      </div>
+                    </div>
                   </Command.Group>
 
-                  <div className="flex-1 bg-slate-100/30 dark:bg-neutral-900/20 rounded-[24px] p-4 border border-transparent dark:border-white/5 flex flex-col">
-                    <h3 className="text-[10px] font-normal uppercase tracking-wider text-slate-400 mb-3">Shortcuts</h3>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center px-3 py-2">
-                        <span className="text-[12px] font-normal text-slate-600 dark:text-neutral-400">Open Kebo</span>
-                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-500 font-mono tracking-widest">⌘⇧K</kbd>
+                  <div className="flex flex-col">
+                    <h3 className="px-1 py-1.5 text-[10px] font-normal uppercase tracking-wider text-slate-400">Shortcuts</h3>
+                    <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-2.5 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 flex flex-col justify-center gap-2.5">
+                      <div className="flex justify-between items-center px-1">
+                        <span className="text-[12px] font-normal text-slate-500 dark:text-neutral-500">Open Kebo</span>
+                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-400 font-mono tracking-widest bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200/60 dark:border-white/10 shadow-sm opacity-80">⌘⇧K</kbd>
                       </div>
-                      <div className="flex justify-between items-center px-3 py-2">
-                        <span className="text-[12px] font-normal text-slate-600 dark:text-neutral-400">Search Tabs</span>
-                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-500 font-mono tracking-widest">⌘⇧T</kbd>
-                      </div>
-                      <div className="mt-auto pt-2 text-center">
-                        <a href="chrome://extensions/shortcuts" target="_blank" className="text-[10px] font-normal text-slate-400 hover:text-slate-600 dark:hover:text-neutral-300 transition-colors">Edit in Chrome &rarr;</a>
+                      <div className="flex justify-between items-center px-1">
+                        <span className="text-[12px] font-normal text-slate-500 dark:text-neutral-500">Search Tabs</span>
+                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-400 font-mono tracking-widest bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200/60 dark:border-white/10 shadow-sm opacity-80">⌘⇧T</kbd>
                       </div>
                     </div>
                   </div>
@@ -304,7 +313,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
             )}
 
             {isSelectingScope && (
-              <Command.Group heading="Commands" className="text-xs font-normal text-slate-400 dark:text-neutral-500 px-2 py-2 [&_[cmdk-group-items]]:mt-2 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-1">
+              <Command.Group heading="Commands" className="text-xs font-normal text-slate-400 dark:text-neutral-500 px-2 py-2 [&_[cmdk-group-items]]:mt-2 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-2">
                 {availableScopes
                   .filter(s => s.prefix.includes(searchQuery.toLowerCase()))
                   .map((scope) => (
@@ -316,7 +325,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                       setActiveScope(scope.id);
                       setSearchQuery('');
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer text-[13px] text-slate-600 dark:text-neutral-400 border border-slate-200/40 dark:border-white/5 hover:bg-slate-100/50 dark:hover:bg-white/5 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:border-slate-300/80 dark:aria-selected:border-white/10 aria-selected:shadow-sm aria-selected:text-slate-900 dark:aria-selected:text-white transition-all"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-2xl cursor-pointer text-[13px] text-slate-600 dark:text-neutral-400 border border-slate-200/40 dark:border-white/5 hover:bg-slate-100/50 dark:hover:bg-white/5 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:border-slate-300/80 dark:aria-selected:border-white/10 aria-selected:shadow-sm aria-selected:text-slate-900 dark:aria-selected:text-white transition-all"
                   >
                     <svg className="w-4 h-4 text-slate-400 dark:text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={scope.icon} />
@@ -347,14 +356,14 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
             )}
 
             {!isSelectingScope && activeScope !== 'none' && activeScope !== 'settings' && results.length > 0 && (
-              <Command.Group className="[&_[cmdk-group-items]]:mt-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-1 px-2 pb-2">
+              <Command.Group className="[&_[cmdk-group-items]]:mt-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col [&_[cmdk-group-items]]:gap-2 px-2 pb-2">
                 {results.map((item) => (
                   <Command.Item
                     key={item.id}
                     data-kebo-item="true"
                     value={item.id}
                     onSelect={() => handleResultSelect(item)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer text-[13px] text-slate-600 dark:text-neutral-400 border border-slate-200/40 dark:border-white/5 hover:bg-slate-100/50 dark:hover:bg-white/5 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:border-slate-300/80 dark:aria-selected:border-white/10 aria-selected:shadow-sm aria-selected:text-slate-900 dark:aria-selected:text-white transition-all group"
+                    className="flex items-center gap-3 px-3 py-2 rounded-2xl cursor-pointer text-[13px] text-slate-600 dark:text-neutral-400 border border-slate-200/40 dark:border-white/5 hover:bg-slate-100/50 dark:hover:bg-white/5 aria-selected:bg-slate-100 dark:aria-selected:bg-white/10 aria-selected:border-slate-300/80 dark:aria-selected:border-white/10 aria-selected:shadow-sm aria-selected:text-slate-900 dark:aria-selected:text-white transition-all group"
                   >
                     {item.type === 'tab' && <span className="text-[9px] font-normal tracking-wider uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-neutral-500 rounded-md font-mono">TAB</span>}
                     {item.type === 'bookmark' && <span className="text-[9px] font-normal tracking-wider uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-neutral-500 rounded-md font-mono">BM</span>}
