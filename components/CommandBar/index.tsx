@@ -21,6 +21,40 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
   } = useAppStore();
   
   const [iframeBgColor, setIframeBgColor] = useState<string | null>(null);
+  const [shortcuts, setShortcuts] = useState<Array<{ name: string, description: string, shortcut: string }>>([]);
+
+  useEffect(() => {
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+      chrome.runtime.sendMessage({ type: 'GET_SHORTCUTS' }, (commands) => {
+        if (!commands) return;
+        
+        const formatShortcut = (shortcut: string) => {
+          return shortcut
+            .replace(/Command/g, '⌘')
+            .replace(/Shift/g, '⇧')
+            .replace(/Ctrl/g, '⌃')
+            .replace(/Alt/g, '⌥')
+            .replace(/MacCtrl/g, '⌃')
+            .replace(/\+/g, '');
+        };
+
+        const formattedCommands = commands.map((cmd: any) => {
+          // Format description for default action and others
+          let desc = cmd.description;
+          if (cmd.name === '_execute_action') desc = 'Activate the extension';
+          if (!desc) desc = cmd.name;
+          
+          return {
+            name: cmd.name,
+            description: desc,
+            shortcut: cmd.shortcut ? formatShortcut(cmd.shortcut) : 'Not set'
+          };
+        });
+        
+        setShortcuts(formattedCommands);
+      });
+    }
+  }, []);
 
   const { results, isLoading } = useBrowserSearch(activeScope, searchQuery);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -217,32 +251,58 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
             {activeScope === 'settings' && (
               <div className="flex flex-col gap-6 p-4 animate-in fade-in zoom-in-[0.98] duration-200">
                 
-                {/* Row 1: Behavior */}
-                <Command.Group heading="Open Behavior" className="[&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
-                  <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-white/10">
-                    <div className="relative flex gap-2">
-                      <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - ${(modes.length - 1) * 8}px) / ${modes.length})`, transform: `translateX(calc(${modes.findIndex(m => m.id === openMode) * 100}% + ${modes.findIndex(m => m.id === openMode) * 8}px))` }} />
-                      {modes.map(mode => (
-                        <Command.Item
-                          key={mode.id}
-                          data-kebo-item="true"
-                          value={`open mode ${mode.label}`}
-                          onSelect={() => {
-                            setOpenMode(mode.id);
-                            if (mode.id !== 'split') setSplitUrl(null);
-                          }}
-                          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${openMode === mode.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={mode.icon} /></svg>
-                          {mode.label}
-                        </Command.Item>
-                      ))}
+                {/* Row 1: Behavior & Appearance */}
+                <div className="flex gap-6 items-stretch pb-2">
+                  <Command.Group heading="Open Behavior" className="flex-1 flex flex-col [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-500 dark:[&_[cmdk-group-heading]]:text-neutral-400 [&_[cmdk-group-items]]:flex-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col">
+                    <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 flex flex-col justify-center">
+                      <div className="relative flex gap-2 flex-1 items-stretch">
+                        <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - ${(modes.length - 1) * 8}px) / ${modes.length})`, transform: `translateX(calc(${modes.findIndex(m => m.id === openMode) * 100}% + ${modes.findIndex(m => m.id === openMode) * 8}px))` }} />
+                        {modes.map(mode => (
+                          <Command.Item
+                            key={mode.id}
+                            data-kebo-item="true"
+                            value={`open mode ${mode.label}`}
+                            onSelect={() => {
+                              setOpenMode(mode.id);
+                              if (mode.id !== 'split') setSplitUrl(null);
+                            }}
+                            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 h-full text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${openMode === mode.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
+                          >
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={mode.icon} /></svg>
+                            <span className="hidden sm:inline whitespace-nowrap">{mode.label}</span>
+                          </Command.Item>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Command.Group>
+                  </Command.Group>
+
+                  <Command.Group heading="Appearance" className="shrink-0 flex flex-col [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-500 dark:[&_[cmdk-group-heading]]:text-neutral-400 [&_[cmdk-group-items]]:flex-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col">
+                    <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 flex flex-col justify-center">
+                      <div className="relative flex gap-2 items-center">
+                        <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] w-8" style={{ transform: `translateX(${['system', 'light', 'dark'].indexOf(theme) * 40}px)` }} />
+                        {[
+                          { id: 'system', label: 'System', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+                          { id: 'light', label: 'Light', icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
+                          { id: 'dark', label: 'Dark', icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' }
+                        ].map(t => (
+                          <Command.Item
+                            key={t.id}
+                            data-kebo-item="true"
+                            value={`appearance theme ${t.label}`}
+                            onSelect={() => setTheme(t.id as ThemePref)}
+                            title={t.label}
+                            className={`relative z-10 flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${theme === t.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
+                          >
+                            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={t.icon} /></svg>
+                          </Command.Item>
+                        ))}
+                      </div>
+                    </div>
+                  </Command.Group>
+                </div>
 
                 {/* Row 2: Search Engine */}
-                <Command.Group heading="Search Engine" className="[&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400">
+                <Command.Group heading="Search Engine" className="[&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-500 dark:[&_[cmdk-group-heading]]:text-neutral-400">
                   <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-1.5 rounded-[14px] border border-slate-200/60 dark:border-white/10">
                     <div className="relative flex gap-2">
                       <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - 32px) / 5)`, transform: `translateX(calc(${['brave', 'duckduckgo', 'startpage', 'qwant', 'ecosia'].indexOf(searchEngine) * 100}% + ${['brave', 'duckduckgo', 'startpage', 'qwant', 'ecosia'].indexOf(searchEngine) * 8}px))` }} />
@@ -258,55 +318,51 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
                           data-kebo-item="true"
                           value={`search engine ${engine.label}`}
                           onSelect={() => setSearchEngine(engine.id as SearchEnginePref)}
-                          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${searchEngine === engine.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
+                          className={`relative z-10 flex-1 flex items-center justify-center gap-2.5 py-3 text-[13px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${searchEngine === engine.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
                         >
-                          <img src={`https://www.google.com/s2/favicons?sz=64&domain=${engine.domain}`} alt={engine.label} className="w-4 h-4 rounded-sm opacity-80 dark:opacity-90" />
-                          {engine.label}
+                          <img src={`https://www.google.com/s2/favicons?sz=64&domain=${engine.domain}`} alt={engine.label} className="w-5 h-5 shrink-0 rounded-sm opacity-80 dark:opacity-90" />
+                          <span className="hidden sm:inline whitespace-nowrap">{engine.label}</span>
                         </Command.Item>
                       ))}
                     </div>
                   </div>
                 </Command.Group>
 
-                {/* Row 3: Appearance & Shortcuts */}
-                <div className="grid grid-cols-2 gap-6 items-stretch pb-2">
-                  <Command.Group heading="Appearance" className="flex flex-col [&_[cmdk-group-heading]]:px-1 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-normal [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:text-slate-400 [&_[cmdk-group-items]]:flex-1 [&_[cmdk-group-items]]:flex [&_[cmdk-group-items]]:flex-col">
-                    <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-2 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 flex flex-col justify-center">
-                      <div className="relative flex gap-1 flex-1 items-stretch">
-                        <div className="absolute top-0 bottom-0 left-0 bg-white dark:bg-white/10 rounded-full shadow-sm border border-slate-200/80 dark:border-white/10 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ width: `calc((100% - 8px) / 3)`, transform: `translateX(calc(${['system', 'light', 'dark'].indexOf(theme) * 100}% + ${['system', 'light', 'dark'].indexOf(theme) * 4}px))` }} />
-                        {[
-                          { id: 'system', label: 'System', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
-                          { id: 'light', label: 'Light', icon: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
-                          { id: 'dark', label: 'Dark', icon: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' }
-                        ].map(t => (
-                          <Command.Item
-                            key={t.id}
-                            data-kebo-item="true"
-                            value={`appearance theme ${t.label}`}
-                            onSelect={() => setTheme(t.id as ThemePref)}
-                            title={t.label}
-                            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 h-full text-[12px] rounded-full cursor-pointer transition-colors outline-none hover:bg-slate-200/50 dark:hover:bg-white/5 aria-selected:bg-slate-200/50 dark:aria-selected:bg-white/5 ${theme === t.id ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-600 dark:text-neutral-400'}`}
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={t.icon} /></svg>
-                          </Command.Item>
-                        ))}
-                      </div>
-                    </div>
-                  </Command.Group>
 
-                  <div className="flex flex-col">
-                    <h3 className="px-1 py-1.5 text-[10px] font-normal uppercase tracking-wider text-slate-400">Shortcuts</h3>
-                    <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-2.5 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 flex flex-col justify-center gap-2.5">
-                      <div className="flex justify-between items-center px-1">
-                        <span className="text-[12px] font-normal text-slate-500 dark:text-neutral-500">Open Kebo</span>
-                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-400 font-mono tracking-widest bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200/60 dark:border-white/10 shadow-sm opacity-80">⌘⇧K</kbd>
-                      </div>
-                      <div className="flex justify-between items-center px-1">
-                        <span className="text-[12px] font-normal text-slate-500 dark:text-neutral-500">Search Tabs</span>
-                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-400 font-mono tracking-widest bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200/60 dark:border-white/10 shadow-sm opacity-80">⌘⇧T</kbd>
-                      </div>
-                    </div>
+
+                {/* Row 4: Shortcuts */}
+                <div className="flex flex-col pb-2">
+                  <div className="flex items-center justify-between px-1 py-1.5">
+                    <h3 className="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-neutral-400">Shortcuts</h3>
+                    <button 
+                      onClick={() => {
+                        if (typeof chrome !== 'undefined' && chrome.runtime) {
+                          chrome.runtime.sendMessage({ type: 'OPEN_SHORTCUTS_SETTINGS' });
+                        }
+                      }}
+                      className="text-[10px] font-medium text-slate-500 dark:text-neutral-400 bg-slate-200/50 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 px-2 py-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-white/10 hover:text-slate-700 dark:hover:text-neutral-200 transition-all flex items-center gap-1.5 cursor-pointer outline-none group shadow-sm"
+                      title="Configure Shortcuts"
+                    >
+                      Edit
+                      <svg className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </button>
                   </div>
+                  <div className="bg-slate-100/50 dark:bg-neutral-900/40 p-3 rounded-[14px] border border-slate-200/60 dark:border-white/10 flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 content-start">
+                    {shortcuts.length > 0 ? shortcuts.map(cmd => (
+                      <div key={cmd.name} className="flex justify-between items-center px-1 overflow-hidden">
+                        <span className="text-[12px] font-normal text-slate-500 dark:text-neutral-500 truncate mr-3" title={cmd.description}>{cmd.description}</span>
+                        <kbd className="text-[10px] text-slate-400 dark:text-neutral-400 font-mono tracking-widest bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200/60 dark:border-white/10 shadow-sm opacity-80 shrink-0">{cmd.shortcut}</kbd>
+                      </div>
+                    )) : (
+                      <div className="col-span-full flex justify-center items-center py-4 opacity-50">
+                        <span className="text-[11px] text-slate-500 dark:text-neutral-400">Loading shortcuts...</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-slate-500 dark:text-neutral-400 text-center px-4 pb-1">
+                  <span className="font-semibold text-slate-700 dark:text-neutral-200">Note:</span> Some shortcuts may conflict with other apps or websites. Update accordingly if they fail to trigger.
                 </div>
 
               </div>

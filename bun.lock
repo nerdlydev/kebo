@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "wxt-react-starter",
+      "name": "Kebo",
       "dependencies": {
         "cmdk": "^1.1.1",
         "fuse.js": "^7.3.0",

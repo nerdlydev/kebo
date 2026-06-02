@@ -54,6 +54,17 @@ export default defineBackground(() => {
         }
       });
     }
+    
+    if (message.type === 'OPEN_SHORTCUTS_SETTINGS') {
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+    }
+    
+    if (message.type === 'GET_SHORTCUTS') {
+      chrome.commands.getAll((commands) => {
+        sendResponse(commands);
+      });
+      return true; // Indicate that response will be sent asynchronously
+    }
   });
 
 });
