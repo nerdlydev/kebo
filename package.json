@@ -1,6 +1,6 @@
 {
   "name": "Kebo",
-  "description": "manifest.json description",
+  "description": "Lightning-fast command bar for your browser. Search tabs, history, and bookmarks instantly.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -29,6 +29,7 @@
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.15",
     "postcss-rem-to-pixel": "^4.1.2",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4",
     "typescript": "^5.9.3",
     "wxt": "^0.20.26"
