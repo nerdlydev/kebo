@@ -35,13 +35,14 @@ export const useBrowserSearch = (activeScope: SearchScope, query: string) => {
 
       try {
         if (activeScope === 'tabs') {
-          const tabs = await chrome.tabs.query({});
+          const tabs = await chrome.runtime.sendMessage({ type: 'FETCH_BROWSER_DATA', scope: 'tabs' });
+          if (tabs.error) throw new Error(tabs.error);
           fetched = tabs
-            .filter(t => t.url && t.url !== 'chrome://newtab/')
-            .map(t => ({
+            .filter((t: any) => t.url && t.url !== 'chrome://newtab/')
+            .map((t: any) => ({
               id: `tab-${t.id}`,
               title: t.title || t.url || 'Unknown Tab',
-              url: t.url!,
+              url: t.url,
               type: 'tab',
               tabId: t.id,
               windowId: t.windowId
@@ -64,27 +65,26 @@ export const useBrowserSearch = (activeScope: SearchScope, query: string) => {
               }
             }
           };
-          const tree = await chrome.bookmarks.getTree();
+          const tree = await chrome.runtime.sendMessage({ type: 'FETCH_BROWSER_DATA', scope: 'bookmarks' });
+          if (tree.error) throw new Error(tree.error);
           processNodes(tree);
           fetched = flatBookmarks;
         } else if (activeScope === 'history') {
           // Fetch up to 2000 recent history items to act as our local fuzzy corpus
-          const hist = await chrome.history.search({
-            text: '',
-            maxResults: 2000,
-            startTime: 0
-          });
+          const hist = await chrome.runtime.sendMessage({ type: 'FETCH_BROWSER_DATA', scope: 'history' });
+          if (hist.error) throw new Error(hist.error);
           fetched = hist
-            .filter(h => h.url)
-            .map(h => ({
+            .filter((h: any) => h.url)
+            .map((h: any) => ({
               id: `hist-${h.id}`,
-              title: h.title || h.url!,
-              url: h.url!,
+              title: h.title || h.url,
+              url: h.url,
               type: 'history'
             }));
         } else if (activeScope === 'closed') {
-          const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 25 });
-          sessions.forEach(session => {
+          const sessions = await chrome.runtime.sendMessage({ type: 'FETCH_BROWSER_DATA', scope: 'closed' });
+          if (sessions.error) throw new Error(sessions.error);
+          sessions.forEach((session: any) => {
             if (session.tab && session.tab.url) {
               fetched.push({
                 id: `closed-tab-${session.tab.sessionId}`,
@@ -94,7 +94,7 @@ export const useBrowserSearch = (activeScope: SearchScope, query: string) => {
                 sessionId: session.tab.sessionId
               });
             } else if (session.window && session.window.tabs) {
-              session.window.tabs.forEach(t => {
+              session.window.tabs.forEach((t: any) => {
                 if (t.url) {
                   fetched.push({
                     id: `closed-win-tab-${t.sessionId}`,

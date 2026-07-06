@@ -1,7 +1,18 @@
 import { defineConfig } from 'wxt';
+import path from 'node:path';
+import fs from 'node:fs';
+
+const profilePath = path.resolve('./.wxt/chrome-data');
+if (!fs.existsSync(profilePath)) {
+  fs.mkdirSync(profilePath, { recursive: true });
+}
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+  webExt: {
+    keepProfileChanges: true,
+    chromiumProfile: profilePath,
+  },
   modules: ['@wxt-dev/module-react'],
   manifest: {
     permissions: ['sidePanel', 'tabs', 'scripting', 'tabGroups', 'storage', 'declarativeNetRequest', 'bookmarks', 'history', 'sessions'],

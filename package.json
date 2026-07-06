@@ -2,7 +2,7 @@
   "name": "Kebo",
   "description": "Lightning-fast command bar for your browser. Search tabs, history, and bookmarks instantly.",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",

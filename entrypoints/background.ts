@@ -65,6 +65,32 @@ export default defineBackground(() => {
       });
       return true; // Indicate that response will be sent asynchronously
     }
+
+    if (message.type === 'FETCH_BROWSER_DATA') {
+      const { scope } = message;
+      (async () => {
+        try {
+          if (scope === 'tabs') {
+            const tabs = await chrome.tabs.query({});
+            sendResponse(tabs);
+          } else if (scope === 'bookmarks') {
+            const tree = await chrome.bookmarks.getTree();
+            sendResponse(tree);
+          } else if (scope === 'history') {
+            const hist = await chrome.history.search({ text: '', maxResults: 2000, startTime: 0 });
+            sendResponse(hist);
+          } else if (scope === 'closed') {
+            const sessions = await chrome.sessions.getRecentlyClosed({ maxResults: 25 });
+            sendResponse(sessions);
+          } else {
+            sendResponse({ error: 'Unknown scope' });
+          }
+        } catch (err: any) {
+          sendResponse({ error: err.message });
+        }
+      })();
+      return true; // Indicate that response will be sent asynchronously
+    }
   });
 
 });

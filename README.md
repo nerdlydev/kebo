@@ -28,9 +28,9 @@ Kebo relies entirely on your keyboard for maximum efficiency. By default:
 > **Shortcut Conflicts**
 > When configuring custom shortcuts, be aware that some key combinations may conflict with your operating system, other installed desktop applications, or specific websites. If a shortcut isn't triggering Kebo, try assigning a different key combination via `chrome://extensions/shortcuts`.
 
-## Getting Started
+## Development
 
-To run Kebo locally:
+To run Kebo locally for development:
 
 ```bash
 # Install dependencies
@@ -39,6 +39,27 @@ bun install
 # Start development server
 bun run dev
 ```
+
+## Building
+
+To create a production-ready `.zip` file of the extension, run the following command:
+
+```bash
+bun run zip
+```
+
+This will bundle the extension and create a `.zip` file in the `.output` directory.
+
+## Installation
+
+You can install the compiled extension manually in your browser:
+
+1. Download the latest build here: [kebo-1.0.0-chrome.zip](.output/kebo-1.0.0-chrome.zip)
+2. Extract the downloaded `.zip` file to a folder on your computer.
+3. Open your Chromium-based browser (Chrome, Brave, Edge, etc.) and navigate to the Extensions page (`chrome://extensions/`).
+4. Enable **"Developer mode"** in the top right corner.
+5. Click **"Load unpacked"** and select the extracted folder.
+6. Kebo is now installed and ready to use!
 
 ## Built With
 

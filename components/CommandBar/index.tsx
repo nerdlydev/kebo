@@ -158,6 +158,24 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
       setActiveScope('none');
     }
 
+    // Intercept '/' to prevent browser shortcuts (e.g. Firefox Quick Find) or webpage capture listeners 
+    // from stealing focus, as they might not recognize shadow DOM inputs.
+    if (e.key === '/') {
+      e.preventDefault();
+      e.stopPropagation();
+      const input = inputRef.current;
+      if (input) {
+        const start = input.selectionStart ?? searchQuery.length;
+        const end = input.selectionEnd ?? searchQuery.length;
+        const newValue = searchQuery.substring(0, start) + '/' + searchQuery.substring(end);
+        setSearchQuery(newValue);
+        // Restore cursor position after the state update
+        setTimeout(() => {
+          input.setSelectionRange(start + 1, start + 1);
+        }, 0);
+      }
+    }
+
     if (e.key === 'Enter') {
       // Fallback: if no item is highlighted (e.g. typing a raw search query in 'none' scope)
       if (searchQuery.trim() && activeScope === 'none' && !searchQuery.startsWith('/')) {
@@ -363,6 +381,7 @@ export const CommandBar = ({ isOverlay, onClose, initialScope }: CommandBarProps
 
                 <div className="text-[11px] text-slate-500 dark:text-neutral-400 text-center px-4 pb-1">
                   <span className="font-semibold text-slate-700 dark:text-neutral-200">Note:</span> Some shortcuts may conflict with other apps or websites. Update accordingly if they fail to trigger.
+                  <span className="opacity-60 ml-1">• v{typeof chrome !== 'undefined' && chrome.runtime ? chrome.runtime.getManifest().version : '1.0.0'}</span>
                 </div>
 
               </div>
